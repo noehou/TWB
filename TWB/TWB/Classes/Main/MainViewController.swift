@@ -27,8 +27,11 @@ extension MainViewController{
   func setupComposeBtn(){
         //1、将composeBtn添加到tabbar中
         tabBar.addSubview(composeBtn)
-        //3、设置位置
+        //2、设置位置
         composeBtn.center =  CGPoint.init(x:tabBar.center.x,y:tabBar.bounds.size.height * 0.5)
+    
+        //3、监听发布按钮的点击
+        composeBtn.addTarget(self, action: #selector(MainViewController.composeBtnClick), for: .touchUpInside )
     }
     /*
     ///调整tabbar中的item
@@ -48,4 +51,11 @@ extension MainViewController{
         }
     }
  */
+}
+
+ //MARK:-事件监听
+extension MainViewController {
+    func composeBtnClick() {
+        print("composeBtnClick")
+    }
 }

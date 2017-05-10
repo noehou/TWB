@@ -8,88 +8,120 @@
 
 import UIKit
 
-class HomeViewController: UITableViewController {
-
+class HomeViewController: BaseViewController {
+     //MARK:- 属性
+    var isPresented : Bool = false
+ //MARK:-懒加载
+    lazy var titleBtn : TitleButton = TitleButton()
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+       
+        
+        //1、没有登录时设置的内容
+         visitorView.addRotationAnim()
+        if !isLogin {
+            return
+        }
+        //2、设置导航栏的内容
+        setupNavigationBar()
     }
+}
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+ //MARK:-  设置UI界面
+extension HomeViewController {
+    func setupNavigationBar() {
+        //1、设置左侧的Item
+//        let leftBtn = UIButton()
+//        leftBtn.setImage(UIImage(named:"navigationbar_friendattention"), for: .normal)
+//        leftBtn.setImage(UIImage(named:"navigationbar_friendattention_highlighted"), for: .highlighted)
+//        leftBtn.sizeToFit()
+        navigationItem.leftBarButtonItem = UIBarButtonItem(imageName: "navigationbar_friendattention")
+        //2、设置右侧的item
+//        let rightBtn = UIButton()
+//        rightBtn.setImage(UIImage(named:"navigationbar_pop"), for: .normal)
+//        rightBtn.setImage(UIImage(named:"navigationbar_pop_highlighted"), for: .highlighted)
+//        rightBtn.sizeToFit()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(imageName: "navigationbar_pop")
+        //3、设置titleView
+        titleBtn.setTitle("侯侯Tony", for: .normal)
+        titleBtn.addTarget(self, action:#selector(titleBtnClick(titleBtn:)), for: .touchUpInside)
+        navigationItem.titleView = titleBtn
     }
+}
 
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+ //MARK:- 事件监听的函数
+extension HomeViewController {
+    func titleBtnClick(titleBtn : TitleButton){
+        //1、改变按钮的状态
+        titleBtn.isSelected = !titleBtn.isSelected
+        
+        //2、创建弹出的控制器
+        let popoverVc = PopoverViewController()
+        //3、设置控制器的modal样式
+        
+        popoverVc.modalPresentationStyle = .custom
+        //4、设置转场的代理
+        popoverVc.transitioningDelegate = self
+        //、弹出控制器
+        present(popoverVc, animated: true, completion: nil)
     }
+}
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+ //MARK:- 自定义转场代理的方法
+
+extension HomeViewController : UIViewControllerTransitioningDelegate {
+    //目的：改变弹出view的尺寸
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return TPresentationController(presentedViewController: presented, presenting: presenting)
     }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
+    //目的：自定义弹出动画
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        isPresented = true
+        return self
     }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        isPresented = false
+        return self
     }
-    */
+}
 
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+ //MARK:- 弹出和消失动画代理方法
+extension HomeViewController : UIViewControllerAnimatedTransitioning {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        return 0.8
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
+    
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        isPresented ?  animationForPresentedView(using: transitionContext) : animationForDismissedView(using: transitionContext)
     }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
+    
+    private func animationForPresentedView(using transitionContext: UIViewControllerContextTransitioning){
+        //1、获取弹出的view
+        let presentedView = transitionContext.view(forKey: UITransitionContextViewKey.to)
+        
+        //2、将弹出的view添加到containerView中
+        transitionContext.containerView.addSubview(presentedView!)
+        
+        //3、执行动画
+        presentedView?.transform = CGAffineTransform(scaleX: 1.0,y: 0.0)
+        presentedView?.layer.anchorPoint = CGPoint(x: 0.5, y: 0)
+        UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: {
+            presentedView?.transform = CGAffineTransform.identity
+        }) { (_) in
+            transitionContext.completeTransition(true)
+        }
     }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    private func animationForDismissedView(using transitionContext: UIViewControllerContextTransitioning){
+        //1、获取消失的view
+        let dismissView = transitionContext.view(forKey: UITransitionContextViewKey.from)
+        
+        //2、执行动画
+        UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: { 
+            dismissView?.transform = CGAffineTransform(scaleX: 1.0, y: 0.00001)
+        }) { (_) in
+            dismissView?.removeFromSuperview()
+            transitionContext.completeTransition(true)
+        }
     }
-    */
-
 }
