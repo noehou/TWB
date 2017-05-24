@@ -1,0 +1,25 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'TWB' do
+  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for TWB
+  	pod 'AFNetworking'
+  	pod 'SDWebImage'
+  	pod 'SnapKit'
+  	pod 'SVProgressHUD'
+    pod 'MJRefresh'
+  	
+  target 'TWBTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'TWBUITests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+end

@@ -1,0 +1,6 @@
+framework module Pods_TWBTests {
+  umbrella header "Pods-TWBTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

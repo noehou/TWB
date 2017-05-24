@@ -56,6 +56,8 @@ extension MainViewController{
  //MARK:-事件监听
 extension MainViewController {
     func composeBtnClick() {
-        print("composeBtnClick")
+        let composeVc = ComposeViewController()
+        let composeNav = UINavigationController(rootViewController: composeVc)
+        present(composeNav, animated: true, completion: nil)
     }
 }

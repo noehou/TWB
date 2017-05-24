@@ -9,14 +9,16 @@
 import UIKit
 
 class TPresentationController: UIPresentationController {
-     //MARK:-懒加载属性
+     //MARK:- 对外提供属性
+    var presentedFrame : CGRect = CGRect.zero
+    //MARK:-懒加载属性
     lazy var coverView : UIView = UIView()
     
      //MARK:- 系统回调函数
     override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         //1、设置弹出view的尺寸
-        presentedView?.frame = CGRect(x:120,y:55,width:180,height:250)
+        presentedView?.frame = presentedFrame
         
         //2、添加蒙版
         setupCoverView()
